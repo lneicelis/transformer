@@ -11,8 +11,8 @@ interface CanPipe
     /**
      * @param object $source
      * @param Context $context
-     * @param $data
      * @param Path $path
+     * @param $data
      * @throws TransformationException
      * @return mixed
      */

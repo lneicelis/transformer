@@ -10,29 +10,15 @@ use Lneicelis\Transformer\ValueObject\Path;
 
 class Transformer
 {
-    /** @var TransformerRepository */
-    protected $transformerRepository;
-
     /** @var CanPipe[] */
     protected $pipes;
 
     /**
-     * @param TransformerRepository $transformerRepository
      * @param CanPipe[] $pipes
      */
-    public function __construct(TransformerRepository $transformerRepository, array $pipes = [])
+    public function __construct(array $pipes = [])
     {
-        $this->transformerRepository = $transformerRepository;
         $this->pipes = $pipes;
-    }
-
-    /**
-     * @param CanTransform $transformer
-     * @throws Exception\DuplicateResourceTransformerException
-     */
-    public function addTransformer(CanTransform $transformer): void
-    {
-        $this->transformerRepository->addTransformer($transformer);
     }
 
     /**
@@ -59,7 +45,7 @@ class Transformer
             case is_object($source):
                 return $this->transformObject($source, $context, $path);
             case is_array($source):
-                return $this->transformRecursive($source, $context, $path);
+                return $this->transformArray($source, $context, $path);
             default:
                 return $source;
         }
@@ -74,10 +60,7 @@ class Transformer
      */
     protected function transformObject($source, Context $context, Path $path)
     {
-        $transformer = $this->transformerRepository->getTransformer($source);
-
-        $data = $transformer->transform($source);
-        $result = $this->pipe($source, $context, $path, $data);
+        $result = $this->pipe($source, $context, $path, null);
 
         return $this->transformAny($result, $context, $path);
     }
@@ -89,7 +72,7 @@ class Transformer
      * @return array
      * @throws TransformerNotFoundException
      */
-    protected function transformRecursive(array $sourceByKey, Context $context, Path $path)
+    protected function transformArray(array $sourceByKey, Context $context, Path $path)
     {
         $dataByKey = [];
 

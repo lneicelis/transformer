@@ -5,6 +5,7 @@ namespace Lneicelis\Transformer;
 use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Contract\HasOptionalProperties;
 use Lneicelis\Transformer\Pipe\OptionalPropertiesPipe;
+use Lneicelis\Transformer\Pipe\TransformPipe;
 use Lneicelis\Transformer\ValueObject\Context;
 use DateTimeZone;
 use DateTime;
@@ -15,6 +16,9 @@ class TransformerTest extends TestCase
 {
     /** @var TransformerRepository */
     private $transformerRepository;
+
+    /** @var TransformPipe */
+    private $transformPipe;
 
     /** @var OptionalPropertiesPipe */
     private $optionalPropsPipe;
@@ -27,8 +31,10 @@ class TransformerTest extends TestCase
         parent::setUp();
 
         $this->transformerRepository = new TransformerRepository();
+        $this->transformPipe = new TransformPipe($this->transformerRepository);
         $this->optionalPropsPipe = new OptionalPropertiesPipe($this->transformerRepository);
-        $this->instance = new Transformer($this->transformerRepository, [
+        $this->instance = new Transformer([
+            $this->transformPipe,
             $this->optionalPropsPipe,
         ]);
     }
@@ -76,7 +82,7 @@ class TransformerTest extends TestCase
     /** @test */
     public function itTransformsObject(): void
     {
-        $this->instance->addTransformer(new Transformer\DateTimeTransformer());
+        $this->transformerRepository->addTransformer(new Transformer\DateTimeTransformer());
 
         $resource = new DateTime('2000-01-01 12:00:00');
         $context = new Context();
@@ -88,7 +94,7 @@ class TransformerTest extends TestCase
     /** @test */
     public function itTransformsArray(): void
     {
-        $this->instance->addTransformer(new Transformer\DateTimeTransformer());
+        $this->transformerRepository->addTransformer(new Transformer\DateTimeTransformer());
 
         $resource = [
             'createdAt' => new DateTime('2000-01-01 12:00:00'),
@@ -118,8 +124,8 @@ class TransformerTest extends TestCase
             }
         };
 
-        $this->instance->addTransformer($transformer);
-        $this->instance->addTransformer(new Transformer\DateTimeTransformer());
+        $this->transformerRepository->addTransformer($transformer);
+        $this->transformerRepository->addTransformer(new Transformer\DateTimeTransformer());
 
         $source = new DateTimeZone('+2000');
         $context = new Context();
@@ -135,7 +141,7 @@ class TransformerTest extends TestCase
     /** @test */
     public function itTransformsUsingInheritance(): void
     {
-        $this->instance->addTransformer(new Transformer\DateTimeTransformer());
+        $this->transformerRepository->addTransformer(new Transformer\DateTimeTransformer());
 
         $childResource = new class('2000-01-01 12:00:00') extends DateTime {};
 
@@ -164,7 +170,7 @@ class TransformerTest extends TestCase
             }
         };
 
-        $this->instance->addTransformer($transformer);
+        $this->transformerRepository->addTransformer($transformer);
 
         $source = new DateTimeZone('+2000');
         $context = new Context(['timeZone']);
@@ -181,7 +187,7 @@ class TransformerTest extends TestCase
     /** @test */
     public function itRecurse(): void
     {
-        $this->instance->addTransformer(
+        $this->transformerRepository->addTransformer(
             new class implements CanTransform, HasOptionalProperties {
                 static function getSourceClass(): string {
                     return stdClass::class;

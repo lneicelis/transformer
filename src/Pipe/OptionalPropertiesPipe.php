@@ -5,6 +5,7 @@ namespace Lneicelis\Transformer\Pipe;
 use Lneicelis\Transformer\Contract\CanPipe;
 use Lneicelis\Transformer\Contract\HasOptionalProperties;
 use Lneicelis\Transformer\Contract\HasSchema;
+use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 use Lneicelis\Transformer\TransformerRepository;
 use Lneicelis\Transformer\ValueObject\Context;
 use Lneicelis\Transformer\ValueObject\Path;
@@ -28,7 +29,7 @@ class OptionalPropertiesPipe implements CanPipe
      * @param Path $path
      * @param $data
      * @return array
-     * @throws \App\Transformation\Exception\TransformerNotFoundException
+     * @throws TransformerNotFoundException
      */
     public function pipe($source, Context $context, Path $path, $data)
     {
