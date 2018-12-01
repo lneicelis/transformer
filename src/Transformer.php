@@ -23,12 +23,14 @@ class Transformer
 
     /**
      * @param mixed $source
-     * @param Context $context
+     * @param Context|null $context
      * @return string|int|float|array
      * @throws TransformerNotFoundException
      */
-    public function transform($source, Context $context)
+    public function transform($source, Context $context = null)
     {
+        $context = $context ?: new Context();
+
         return $this->transformAny($source, $context, new Path());
     }
 

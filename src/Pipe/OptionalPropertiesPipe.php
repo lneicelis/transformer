@@ -50,7 +50,7 @@ class OptionalPropertiesPipe implements CanPipe
         return array_reduce(
             $properties,
             function (array $data, string $key) use ($source, $transformer) {
-                $data[$key] = $transformer->{$key}($source);
+                $data[$key] = $data[$key] ?? $transformer->{$key}($source);
 
                 return $data;
             },

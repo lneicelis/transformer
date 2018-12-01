@@ -2,15 +2,9 @@
 
 namespace Lneicelis\Transformer\Contract;
 
+use Lneicelis\Transformer\ValueObject\AccessConfig;
+
 interface HasAccessControl
 {
-    /**
-     * @return string[]
-     */
-    public function getDefaultAcl(): array;
-
-    /**
-     * @return array[]
-     */
-    public function getAclByProperty(): array;
+    public function getAccessConfig(): AccessConfig;
 }

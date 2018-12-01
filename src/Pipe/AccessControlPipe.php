@@ -21,10 +21,15 @@ class AccessControlPipe implements CanPipe
 
     /**
      * @param TransformerRepository $transformerRepository
+     * @param array $guards
      */
-    public function __construct(TransformerRepository $transformerRepository)
+    public function __construct(TransformerRepository $transformerRepository, array $guards = [])
     {
         $this->transformerRepository = $transformerRepository;
+
+        foreach ($guards as $guard) {
+            $this->addGuard($guard);
+        }
     }
 
     public function addGuard(CanGuard $guard): void
@@ -63,11 +68,12 @@ class AccessControlPipe implements CanPipe
         }
 
         $optionalProps = $this->getCurrentPathSchemaProperties($path, $context->getSchema());
-            $defaultAcl = $transformer->getDefaultAcl();
-        $optionalAcl = $transformer->getAclByProperty();
+        $accessConfig = $transformer->getAccessConfig();
+        $defaultAccessGroups = $accessConfig->getDefaultGroups();
+        $accessGroupsByProperty = $accessConfig->getGroupsByProperty();
 
-        $optionalPropsAcl = $this->pick($optionalAcl, $optionalProps);
-        $allAcl = array_unique(array_merge($defaultAcl, ...array_values($optionalPropsAcl)));
+        $optionalPropsAcl = $this->pick($accessGroupsByProperty, $optionalProps);
+        $allAcl = array_unique(array_merge($defaultAccessGroups, ...array_values($optionalPropsAcl)));
 
         foreach ($allAcl as $acl) {
             $guard = $this->guardByName[$acl];

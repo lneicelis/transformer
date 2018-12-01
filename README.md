@@ -190,3 +190,84 @@ array(2) {
 }
 
  ```
+
+### Access control
+Since one of the goals of this package is to help to define clear and transparent interface
+of how application data is returned starting with how it is transformed and finishing who can access it.
+Since single transformer is responsible of transforming all source properties of an object issues occur
+when the same transformer is being used to return data that was required by for example admin and regular use.
+In order to solve this issue you can use AccessControlPipe in transformation pipeline to specify access control
+for individual properties.
+
+Example:
+
+```php
+class EvilGuard implements CanGuard {
+
+    public function getName(): string
+    {
+        return self::class;
+    }
+
+    public function canAccess($source, Context $context): bool
+    {
+        return false;
+    }
+}
+
+class DateTimeTransformer implements CanTransform, HasOptionalProperties, HasAccessControl
+{
+    public static function getSourceClass(): string
+    {
+        return DateTime::class;
+    }
+
+    public function getAccessConfig(): AccessConfig
+    {
+        return new AccessConfig([], [
+            'timestamp' => [EvilGuard::class],
+        ]);
+    }
+
+    /**
+     * @param DateTime $source
+     * @return array
+     */
+    public function transform($source): array
+    {
+        return [
+            'iso' => $source->format(DateTime::ISO8601),
+        ];
+    }
+
+    public function timestamp(DateTime $source): int {
+        return $source->getTimestamp();
+    }
+}
+
+$transformerRepository = new TransformerRepository();
+$transformer = new Transformer([
+    new AccessControlPipe($transformerRepository, [new EvilGuard()]),
+    new TransformPipe($transformerRepository),
+    new OptionalPropertiesPipe($transformerRepository),
+]);
+
+$transformerRepository->addTransformer(new DateTimeTransformer());
+
+$someDate = new DateTime('2000-10-10 12:00:00');
+
+$data = $transformer->transform($someDate);
+
+var_dump($data);
+// Outputs:
+array(1) {
+  ["iso"]=>string(24) "2000-10-10T12:00:00+0000"
+}
+
+$schema = [
+    'timestamp',
+];
+$data = $transformer->transform($someDate, new Context($schema));
+
+// throws Lneicelis\Transformer\Exception\AccessDeniedException
+```

@@ -7,6 +7,7 @@ use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Contract\HasAccessControl;
 use Lneicelis\Transformer\Exception\AccessDeniedException;
 use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\ValueObject\AccessConfig;
 use Lneicelis\Transformer\ValueObject\Context;
 use Lneicelis\Transformer\ValueObject\Path;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -38,8 +39,8 @@ class AccessControlPipeTest extends TestCase
             ->getMockBuilder([CanTransform::class, HasAccessControl::class])
             ->getMock();
         $transformer->expects(static::once())
-            ->method('getDefaultAcl')
-            ->willReturn([]);
+            ->method('getAccessConfig')
+            ->willReturn(new AccessConfig());
 
         $this->transformerRepository->expects(static::once())
             ->method('getTransformer')
@@ -58,8 +59,8 @@ class AccessControlPipeTest extends TestCase
             ->getMockBuilder([CanTransform::class, HasAccessControl::class])
             ->getMock();
         $transformer->expects(static::once())
-            ->method('getDefaultAcl')
-            ->willReturn(['test_guard']);
+            ->method('getAccessConfig')
+            ->willReturn(new AccessConfig(['test_guard']));
 
         $this->transformerRepository->expects(static::once())
             ->method('getTransformer')
@@ -85,8 +86,8 @@ class AccessControlPipeTest extends TestCase
             ->getMockBuilder([CanTransform::class, HasAccessControl::class])
             ->getMock();
         $transformer->expects(static::once())
-            ->method('getDefaultAcl')
-            ->willReturn(['test_guard']);
+            ->method('getAccessConfig')
+            ->willReturn(new AccessConfig(['test_guard']));
 
         $this->transformerRepository->expects(static::once())
             ->method('getTransformer')
@@ -114,13 +115,10 @@ class AccessControlPipeTest extends TestCase
             ->getMockBuilder([CanTransform::class, HasAccessControl::class])
             ->getMock();
         $transformer->expects(static::once())
-            ->method('getDefaultAcl')
-            ->willReturn([]);
-        $transformer->expects(static::once())
-            ->method('getAclByProperty')
-            ->willReturn([
+            ->method('getAccessConfig')
+            ->willReturn(new AccessConfig([], [
                 'optionalProperty' => ['test_guard'],
-            ]);
+            ]));
 
         $this->transformerRepository->expects(static::once())
             ->method('getTransformer')
@@ -145,13 +143,10 @@ class AccessControlPipeTest extends TestCase
             ->getMockBuilder([CanTransform::class, HasAccessControl::class])
             ->getMock();
         $transformer->expects(static::once())
-            ->method('getDefaultAcl')
-            ->willReturn([]);
-        $transformer->expects(static::once())
-            ->method('getAclByProperty')
-            ->willReturn([
+            ->method('getAccessConfig')
+            ->willReturn(new AccessConfig([], [
                 'optionalProperty' => ['test_guard'],
-            ]);
+            ]));
 
         $this->transformerRepository->expects(static::once())
             ->method('getTransformer')
