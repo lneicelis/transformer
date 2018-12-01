@@ -22,5 +22,10 @@
       "/tests/"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "League\\Tactician\\Tests\\": "tests/"
+    }
+  },
   "minimum-stability": "dev"
 }
