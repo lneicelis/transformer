@@ -53,13 +53,13 @@ $transformerRepository->addTransformer($dateTimeTransformer);
 ### Using transformer
 ```php
 $someDate = new DateTime('2000-10-10 12:00:00');
-echo $transformer->transform($someDate); // Outouts "2000-10-10T12:00:00+0000"
+echo $transformer->transform($someDate); // outputs "2000-10-10T12:00:00+0000"
 ```
 
 ## Advanced usage
 
 ### Nesting
-Source object properties or values returned from source getters are not always scalar values 
+Source object properties or values returned from source accessors are not always scalar values 
 in real world app but instead other objects.
 In order to get only scalar values we might need to inject transformers into transformers 
 to eventually have only scalar values that can be serialized.

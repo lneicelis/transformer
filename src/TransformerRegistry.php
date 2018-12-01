@@ -6,7 +6,7 @@ use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Exception\DuplicateResourceTransformerException;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 
-class TransformerRepository
+class TransformerRegistry
 {
     /** @var CanTransform[] */
     protected $transformerBySourceClass = [];

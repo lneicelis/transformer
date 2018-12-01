@@ -3,10 +3,10 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Lneicelis\Transformer\Contract\CanTransform;
-use Lneicelis\Transformer\Pipe\OptionalPropertiesPipe;
+use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use Lneicelis\Transformer\Pipe\TransformPipe;
 use Lneicelis\Transformer\Transformer;
-use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\TransformerRegistry;
 
 class DateTimeTransformer implements CanTransform
 {
@@ -45,10 +45,10 @@ class DateTimeZoneTransformer implements CanTransform
     }
 }
 
-$transformerRepository = new TransformerRepository();
+$transformerRepository = new TransformerRegistry();
 $transformer = new Transformer([
     new TransformPipe($transformerRepository),
-    new OptionalPropertiesPipe($transformerRepository),
+    new LazyPropertiesPipe($transformerRepository),
 ]);
 
 $transformerRepository->addTransformer(new DateTimeTransformer());

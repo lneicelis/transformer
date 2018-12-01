@@ -4,19 +4,19 @@ namespace Lneicelis\Transformer\Pipe;
 
 use Lneicelis\Transformer\Contract\CanPipe;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
-use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\TransformerRegistry;
 use Lneicelis\Transformer\ValueObject\Context;
 use Lneicelis\Transformer\ValueObject\Path;
 
 class TransformPipe implements CanPipe
 {
-    /** @var TransformerRepository */
+    /** @var TransformerRegistry */
     private $transformerRepository;
 
     /**
-     * @param TransformerRepository $transformerRepository
+     * @param TransformerRegistry $transformerRepository
      */
-    public function __construct(TransformerRepository $transformerRepository)
+    public function __construct(TransformerRegistry $transformerRepository)
     {
         $this->transformerRepository = $transformerRepository;
     }

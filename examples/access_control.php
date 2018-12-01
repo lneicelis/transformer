@@ -6,10 +6,10 @@ use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Contract\HasAccessControl;
 use Lneicelis\Transformer\Contract\HasOptionalProperties;
 use Lneicelis\Transformer\Pipe\AccessControlPipe;
-use Lneicelis\Transformer\Pipe\OptionalPropertiesPipe;
+use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use Lneicelis\Transformer\Pipe\TransformPipe;
 use Lneicelis\Transformer\Transformer;
-use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\TransformerRegistry;
 use Lneicelis\Transformer\ValueObject\AccessConfig;
 use Lneicelis\Transformer\ValueObject\Context;
 
@@ -56,11 +56,11 @@ class DateTimeTransformer implements CanTransform, HasOptionalProperties, HasAcc
     }
 }
 
-$transformerRepository = new TransformerRepository();
+$transformerRepository = new TransformerRegistry();
 $transformer = new Transformer([
     new AccessControlPipe($transformerRepository, [new EvilGuard()]),
     new TransformPipe($transformerRepository),
-    new OptionalPropertiesPipe($transformerRepository),
+    new LazyPropertiesPipe($transformerRepository),
 ]);
 
 $transformerRepository->addTransformer(new DateTimeTransformer());

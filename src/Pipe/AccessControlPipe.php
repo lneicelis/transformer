@@ -7,23 +7,23 @@ use Lneicelis\Transformer\Contract\CanPipe;
 use Lneicelis\Transformer\Contract\HasAccessControl;
 use Lneicelis\Transformer\Exception\AccessDeniedException;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
-use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\TransformerRegistry;
 use Lneicelis\Transformer\ValueObject\Context;
 use Lneicelis\Transformer\ValueObject\Path;
 
 class AccessControlPipe implements CanPipe
 {
-    /** @var TransformerRepository */
+    /** @var TransformerRegistry */
     private $transformerRepository;
 
     /** @var CanGuard[] */
     private $guardByName = [];
 
     /**
-     * @param TransformerRepository $transformerRepository
+     * @param TransformerRegistry $transformerRepository
      * @param array $guards
      */
-    public function __construct(TransformerRepository $transformerRepository, array $guards = [])
+    public function __construct(TransformerRegistry $transformerRepository, array $guards = [])
     {
         $this->transformerRepository = $transformerRepository;
 

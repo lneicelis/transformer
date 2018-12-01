@@ -4,16 +4,16 @@ namespace Lneicelis\Transformer;
 
 use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
-use Lneicelis\Transformer\Pipe\OptionalPropertiesPipe;
+use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use PHPUnit\Framework\TestCase;
 
 class TransformerUnitTestCase extends TestCase
 {
-    /** @var TransformerRepository */
-    private $transformerRepository;
+    /** @var TransformerRegistry */
+    private $transformerRegistry;
 
-    /** @var OptionalPropertiesPipe */
-    private $optionalPropsPipe;
+    /** @var LazyPropertiesPipe */
+    private $lazyPropertiesPipe;
 
     /** @var Transformer */
     private $transformer;
@@ -22,9 +22,9 @@ class TransformerUnitTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->transformerRepository = $this->createMock(TransformerRepository::class);
+        $this->transformerRegistry = $this->createMock(TransformerRegistry::class);
 
-        $this->transformerRepository = new class extends TransformerRepository {
+        $this->transformerRegistry = new class extends TransformerRegistry {
             function getTransformer($source): CanTransform
             {
                 try {
@@ -34,9 +34,9 @@ class TransformerUnitTestCase extends TestCase
                 }
             }
         };
-        $this->optionalPropsPipe = new OptionalPropertiesPipe($this->transformerRepository);
-        $this->transformer = new Transformer($this->transformerRepository, [
-            $this->optionalPropsPipe,
+        $this->lazyPropertiesPipe = new LazyPropertiesPipe($this->transformerRegistry);
+        $this->transformer = new Transformer([
+            $this->lazyPropertiesPipe,
         ]);
     }
 

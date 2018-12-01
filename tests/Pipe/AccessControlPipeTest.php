@@ -6,7 +6,7 @@ use Lneicelis\Transformer\Contract\CanGuard;
 use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Contract\HasAccessControl;
 use Lneicelis\Transformer\Exception\AccessDeniedException;
-use Lneicelis\Transformer\TransformerRepository;
+use Lneicelis\Transformer\TransformerRegistry;
 use Lneicelis\Transformer\ValueObject\AccessConfig;
 use Lneicelis\Transformer\ValueObject\Context;
 use Lneicelis\Transformer\ValueObject\Path;
@@ -16,8 +16,8 @@ use stdClass;
 
 class AccessControlPipeTest extends TestCase
 {
-    /** @var TransformerRepository|MockObject */
-    private $transformerRepository;
+    /** @var TransformerRegistry|MockObject */
+    private $transformerRegistry;
 
     /** @var CanGuard|MockObject */
     private $testGuard;
@@ -27,9 +27,9 @@ class AccessControlPipeTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->transformerRepository = $this->createMock(TransformerRepository::class);
+        $this->transformerRegistry = $this->createMock(TransformerRegistry::class);
         $this->testGuard = $this->createMock(CanGuard::class);
-        $this->instance = new AccessControlPipe($this->transformerRepository);
+        $this->instance = new AccessControlPipe($this->transformerRegistry);
     }
 
     /** @test */
@@ -42,7 +42,7 @@ class AccessControlPipeTest extends TestCase
             ->method('getAccessConfig')
             ->willReturn(new AccessConfig());
 
-        $this->transformerRepository->expects(static::once())
+        $this->transformerRegistry->expects(static::once())
             ->method('getTransformer')
             ->willReturn($transformer);
 
@@ -62,7 +62,7 @@ class AccessControlPipeTest extends TestCase
             ->method('getAccessConfig')
             ->willReturn(new AccessConfig(['test_guard']));
 
-        $this->transformerRepository->expects(static::once())
+        $this->transformerRegistry->expects(static::once())
             ->method('getTransformer')
             ->willReturn($transformer);
 
@@ -89,7 +89,7 @@ class AccessControlPipeTest extends TestCase
             ->method('getAccessConfig')
             ->willReturn(new AccessConfig(['test_guard']));
 
-        $this->transformerRepository->expects(static::once())
+        $this->transformerRegistry->expects(static::once())
             ->method('getTransformer')
             ->willReturn($transformer);
 
@@ -120,7 +120,7 @@ class AccessControlPipeTest extends TestCase
                 'optionalProperty' => ['test_guard'],
             ]));
 
-        $this->transformerRepository->expects(static::once())
+        $this->transformerRegistry->expects(static::once())
             ->method('getTransformer')
             ->willReturn($transformer);
 
@@ -148,7 +148,7 @@ class AccessControlPipeTest extends TestCase
                 'optionalProperty' => ['test_guard'],
             ]));
 
-        $this->transformerRepository->expects(static::once())
+        $this->transformerRegistry->expects(static::once())
             ->method('getTransformer')
             ->willReturn($transformer);
 
