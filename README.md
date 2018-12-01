@@ -1,8 +1,5 @@
 # transformer
-API layer transformation component
-
-* install
-* configure
+[![CircleCI](https://circleci.com/gh/lneicelis/transformer.svg?style=svg)](https://circleci.com/gh/lneicelis/transformer)
 
 ## Usage
 For the sake of simplicity we wont use any namespaces
