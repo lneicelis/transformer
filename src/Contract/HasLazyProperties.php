@@ -5,9 +5,9 @@ namespace Lneicelis\Transformer\Contract;
 interface HasLazyProperties extends CanTransform
 {
     /**
-     * @param mixed $source any php object that has public properties or methods
+     * @param mixed $resource any php object that has public properties or methods
      * @return array
      */
-    public function transform($source): array;
+    public function transform($resource): array;
 }
 

@@ -112,11 +112,11 @@ class TransformerTest extends TestCase
     public function itTransformsRecursively(): void
     {
         $transformer = new class implements CanTransform {
-            static function getSourceClass(): string {
+            function getResourceClass(): string {
                 return DateTimeZone::class;
             }
 
-            function transform($source) {
+            function transform($resource) {
                 return [
                     'type' => 'dateInterval',
                     'createdAt' => new DateTime('2000-01-01 12:00:00'),
@@ -127,9 +127,9 @@ class TransformerTest extends TestCase
         $this->transformerRegistry->addTransformer($transformer);
         $this->transformerRegistry->addTransformer(new Transformer\DateTimeTransformer());
 
-        $source = new DateTimeZone('+2000');
+        $resource = new DateTimeZone('+2000');
         $context = new Context();
-        $data = $this->instance->transform($source, $context);
+        $data = $this->instance->transform($resource, $context);
         $expectedData = [
             'type' => 'dateInterval',
             'createdAt' => '2000-01-01T12:00:00+0000',
@@ -155,27 +155,27 @@ class TransformerTest extends TestCase
     public function itAddsOptionalProperties(): void
     {
         $transformer = new class implements CanTransform, HasLazyProperties {
-            static function getSourceClass(): string {
+            function getResourceClass(): string {
                 return DateTimeZone::class;
             }
 
-            function transform($source): array {
+            function transform($resource): array {
                 return [
                     'type' => 'dateInterval',
                 ];
             }
 
-            function timeZone(DateTimeZone $source): string {
-                return $source->getName();
+            function timeZone(DateTimeZone $resource): string {
+                return $resource->getName();
             }
         };
 
         $this->transformerRegistry->addTransformer($transformer);
 
-        $source = new DateTimeZone('+2000');
+        $resource = new DateTimeZone('+2000');
         $context = new Context(['timeZone']);
 
-        $data = $this->instance->transform($source, $context);
+        $data = $this->instance->transform($resource, $context);
         $expectedData = [
             'type' => 'dateInterval',
             'timeZone' => '+20:00',
@@ -189,36 +189,36 @@ class TransformerTest extends TestCase
     {
         $this->transformerRegistry->addTransformer(
             new class implements CanTransform, HasLazyProperties {
-                static function getSourceClass(): string {
+                function getResourceClass(): string {
                     return stdClass::class;
                 }
 
-                function transform($source): array {
+                function transform($resource): array {
                     return [
-                        'id' => $source->id,
+                        'id' => $resource->id,
                     ];
                 }
 
-                function source(stdClass $source): stdClass {
-                    return $source;
+                function resource(stdClass $resource): stdClass {
+                    return $resource;
                 }
             }
         );
 
-        $source = new stdClass();
-        $source->id = 123;
+        $resource = new stdClass();
+        $resource->id = 123;
         $context = new Context([
-            'source' => [
-                'source',
+            'resource' => [
+                'resource',
             ],
         ]);
 
-        $data = $this->instance->transform($source, $context);
+        $data = $this->instance->transform($resource, $context);
         $expectedData = [
             'id' => 123,
-            'source' => [
+            'resource' => [
                 'id' => 123,
-                'source' => [
+                'resource' => [
                     'id' => 123,
                 ],
             ],

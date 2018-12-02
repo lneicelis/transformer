@@ -10,38 +10,38 @@ use Lneicelis\Transformer\TransformerRegistry;
 
 class DateTimeTransformer implements CanTransform
 {
-    public static function getSourceClass(): string
+    public function getResourceClass(): string
     {
         return DateTime::class;
     }
 
     /**
-     * @param DateTime $source
+     * @param DateTime $resource
      * @return array
      */
-    public function transform($source): array
+    public function transform($resource): array
     {
         return [
-            'iso' => $source->format(DateTime::ISO8601),
-            'timezone' => $source->getTimezone(),
+            'iso' => $resource->format(DateTime::ISO8601),
+            'timezone' => $resource->getTimezone(),
         ];
     }
 }
 
 class DateTimeZoneTransformer implements CanTransform
 {
-    public static function getSourceClass(): string
+    public function getResourceClass(): string
     {
         return DateTimeZone::class;
     }
 
     /**
-     * @param DateTimeZone $source
+     * @param DateTimeZone $resource
      * @return string
      */
-    public function transform($source): string
+    public function transform($resource): string
     {
-        return $source->getName();
+        return $resource->getName();
     }
 }
 
@@ -54,7 +54,7 @@ $transformer = new Transformer([
 $transformerRepository->addTransformer(new DateTimeTransformer());
 $transformerRepository->addTransformer(new DateTimeZoneTransformer());
 
-$someDate = new DateTime('2000-10-10 12:00:00', new DateTimeZone('-0400'));
+$resource = new DateTime('2000-10-10 12:00:00', new DateTimeZone('-0400'));
 
-$data = $transformer->transform($someDate);
+$data = $transformer->transform($resource);
 var_dump($data);

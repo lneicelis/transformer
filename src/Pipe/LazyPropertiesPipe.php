@@ -24,20 +24,20 @@ class LazyPropertiesPipe implements CanPipe
     }
 
     /**
-     * @param object $source
+     * @param object $resource
      * @param Context $context
      * @param Path $path
      * @param $data
      * @return array
      * @throws TransformerNotFoundException
      */
-    public function pipe($source, Context $context, Path $path, $data)
+    public function pipe($resource, Context $context, Path $path, $data)
     {
         if (! $context instanceof HasSchema) {
             return $data;
         }
 
-        $transformer = $this->transformerRepository->getTransformer($source);
+        $transformer = $this->transformerRepository->getTransformer($resource);
 
         if (! $transformer instanceof HasLazyProperties) {
             return $data;
@@ -49,8 +49,8 @@ class LazyPropertiesPipe implements CanPipe
 
         return array_reduce(
             $properties,
-            function (array $data, string $key) use ($source, $transformer) {
-                $data[$key] = $data[$key] ?? $transformer->{$key}($source);
+            function (array $data, string $key) use ($resource, $transformer) {
+                $data[$key] = $data[$key] ?? $transformer->{$key}($resource);
 
                 return $data;
             },

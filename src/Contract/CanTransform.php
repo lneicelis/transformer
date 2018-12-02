@@ -7,12 +7,12 @@ interface CanTransform
     /**
      * @return string
      */
-    public static function getSourceClass(): string;
+    public function getResourceClass(): string;
 
     /**
-     * @param mixed $source any php object that has public properties or methods
+     * @param mixed $resource any php object that has public properties or methods
      * @return string|int|float|array
      */
-    public function transform($source);
+    public function transform($resource);
 }
 

@@ -38,7 +38,7 @@ class AccessControlPipe implements CanPipe
     }
 
     /**
-     * @param object $source
+     * @param object $resource
      * @param Context $context
      * @param $data
      * @param Path $path
@@ -46,22 +46,22 @@ class AccessControlPipe implements CanPipe
      * @throws TransformerNotFoundException
      * @throws AccessDeniedException
      */
-    public function pipe($source, Context $context, Path $path, $data)
+    public function pipe($resource, Context $context, Path $path, $data)
     {
-        $this->assertCanAccess($source, $context, $path);
+        $this->assertCanAccess($resource, $context, $path);
 
         return $data;
     }
 
     /**
-     * @param $source
+     * @param $resource
      * @param Context $context
      * @param Path $path
      * @throws TransformerNotFoundException
      * @throws AccessDeniedException
      */
-    private function assertCanAccess($source, Context $context, Path $path): void {
-        $transformer = $this->transformerRepository->getTransformer($source);
+    private function assertCanAccess($resource, Context $context, Path $path): void {
+        $transformer = $this->transformerRepository->getTransformer($resource);
 
         if (! $transformer instanceof HasAccessConfig) {
             return;
@@ -78,7 +78,7 @@ class AccessControlPipe implements CanPipe
         foreach ($allAcl as $acl) {
             $guard = $this->guardByName[$acl];
 
-            if (! $guard->canAccess($source, $context)) {
+            if (! $guard->canAccess($resource, $context)) {
                 throw new AccessDeniedException('test');
             }
         }

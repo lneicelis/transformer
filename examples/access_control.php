@@ -20,7 +20,7 @@ class EvilGuard implements CanGuard {
         return self::class;
     }
 
-    public function canAccess($source, Context $context): bool
+    public function canAccess($resource, Context $context): bool
     {
         return false;
     }
@@ -28,7 +28,7 @@ class EvilGuard implements CanGuard {
 
 class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessConfig
 {
-    public static function getSourceClass(): string
+    public function getResourceClass(): string
     {
         return DateTime::class;
     }
@@ -41,18 +41,18 @@ class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessC
     }
 
     /**
-     * @param DateTime $source
+     * @param DateTime $resource
      * @return array
      */
-    public function transform($source): array
+    public function transform($resource): array
     {
         return [
-            'iso' => $source->format(DateTime::ISO8601),
+            'iso' => $resource->format(DateTime::ISO8601),
         ];
     }
 
-    public function timestamp(DateTime $source): int {
-        return $source->getTimestamp();
+    public function timestamp(DateTime $resource): int {
+        return $resource->getTimestamp();
     }
 }
 
@@ -65,13 +65,13 @@ $transformer = new Transformer([
 
 $transformerRepository->addTransformer(new DateTimeTransformer());
 
-$someDate = new DateTime('2000-10-10 12:00:00');
+$resource = new DateTime('2000-10-10 12:00:00');
 
-$data = $transformer->transform($someDate);
+$data = $transformer->transform($resource);
 
 var_dump($data);
 
 $schema = [
     'timestamp',
 ];
-$data = $transformer->transform($someDate, new Context($schema));
+$data = $transformer->transform($resource, new Context($schema));

@@ -7,17 +7,17 @@ use DateTime;
 
 class DateTimeTransformer implements CanTransform
 {
-    public static function getSourceClass(): string
+    public function getResourceClass(): string
     {
         return DateTime::class;
     }
 
     /**
-     * @param DateTime $source
+     * @param DateTime $resource
      * @return string|int|float|array
      */
-    public function transform($source)
+    public function transform($resource)
     {
-        return $source->format(DateTime::ISO8601);
+        return $resource->format(DateTime::ISO8601);
     }
 }

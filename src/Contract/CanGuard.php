@@ -8,5 +8,5 @@ interface CanGuard
 {
     public function getName(): string;
 
-    public function canAccess($source, Context $context): bool;
+    public function canAccess($resource, Context $context): bool;
 }

@@ -9,7 +9,7 @@ use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 class TransformerRegistry
 {
     /** @var CanTransform[] */
-    protected $transformerBySourceClass = [];
+    protected $transformerByResourceClass = [];
 
     /**
      * @param CanTransform $transformer
@@ -18,38 +18,38 @@ class TransformerRegistry
      */
     public function addTransformer(CanTransform $transformer)
     {
-        $sourceClass = $transformer->getSourceClass();
+        $resourceClass = $transformer->getResourceClass();
 
-        if (array_key_exists($sourceClass, $this->transformerBySourceClass)) {
+        if (array_key_exists($resourceClass, $this->transformerByResourceClass)) {
             throw new DuplicateResourceTransformerException(sprintf(
-                'Transformer for source "%s" already registered in "%s"',
-                $sourceClass,
-                get_class($this->transformerBySourceClass[$sourceClass])
+                'Transformer for resource "%s" already registered in "%s"',
+                $resourceClass,
+                get_class($this->transformerByResourceClass[$resourceClass])
             ));
         }
 
-        $this->transformerBySourceClass[$sourceClass] = $transformer;
+        $this->transformerByResourceClass[$resourceClass] = $transformer;
 
         return $this;
     }
 
     /**
-     * @param mixed $source
+     * @param mixed $resource
      * @return CanTransform
      * @throws TransformerNotFoundException
      */
-    public function getTransformer($source): CanTransform
+    public function getTransformer($resource): CanTransform
     {
-        $className = get_class($source);
+        $className = get_class($resource);
 
         do {
-            if (isset($this->transformerBySourceClass[$className])) {
-                return $this->transformerBySourceClass[$className];
+            if (isset($this->transformerByResourceClass[$className])) {
+                return $this->transformerByResourceClass[$className];
             }
         } while ($className = get_parent_class($className));
 
         throw new TransformerNotFoundException(
-            sprintf('Transformer for source "%s" is missing', get_class($source))
+            sprintf('Transformer for resource "%s" is missing', get_class($resource))
         );
     }
 }

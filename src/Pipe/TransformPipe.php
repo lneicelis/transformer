@@ -22,17 +22,17 @@ class TransformPipe implements CanPipe
     }
 
     /**
-     * @param object $source
+     * @param object $resource
      * @param Context $context
      * @param $data
      * @param Path $path
      * @return mixed
      * @throws TransformerNotFoundException
      */
-    public function pipe($source, Context $context, Path $path, $data)
+    public function pipe($resource, Context $context, Path $path, $data)
     {
-        $transformer = $this->transformerRepository->getTransformer($source);
+        $transformer = $this->transformerRepository->getTransformer($resource);
 
-        return $transformer->transform($source);
+        return $transformer->transform($resource);
     }
 }

@@ -25,10 +25,10 @@ class TransformerUnitTestCase extends TestCase
         $this->transformerRegistry = $this->createMock(TransformerRegistry::class);
 
         $this->transformerRegistry = new class extends TransformerRegistry {
-            function getTransformer($source): CanTransform
+            function getTransformer($resource): CanTransform
             {
                 try {
-                    return parent::getTransformer($source);
+                    return parent::getTransformer($resource);
                 } catch (TransformerNotFoundException $exception) {
 
                 }

@@ -52,7 +52,7 @@ class AccessControlPipeTest extends TestCase
     /** @test */
     public function itAllowsWhenGuardAllows(): void
     {
-        $source = new stdClass();
+        $resource = new stdClass();
         $context = new Context();
 
         $transformer = $this
@@ -71,7 +71,7 @@ class AccessControlPipeTest extends TestCase
             ->willReturn('test_guard');
         $this->testGuard->expects(static::once())
             ->method('canAccess')
-            ->with($source, $context)
+            ->with($resource, $context)
             ->willReturn(true);
 
         $this->instance->addGuard($this->testGuard);

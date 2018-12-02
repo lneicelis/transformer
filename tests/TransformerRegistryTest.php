@@ -23,12 +23,12 @@ class TransformerRegistryTest extends TestCase
     public function itReturnsSourceTransformer(): void
     {
         $transformer = new class implements CanTransform {
-            public static function getSourceClass(): string
+            public function getResourceClass(): string
             {
                 return stdClass::class;
             }
 
-            public function transform($source)
+            public function transform($resource)
             {
                 return null;
             }
@@ -43,24 +43,24 @@ class TransformerRegistryTest extends TestCase
     public function itUsesInheritanceTreeToResolveSourceTransformer(): void
     {
         $transformer = new class implements CanTransform {
-            public static function getSourceClass(): string
+            public function getResourceClass(): string
             {
                 return stdClass::class;
             }
 
-            public function transform($source)
+            public function transform($resource)
             {
                 return null;
             }
         };
 
-        $source = $this->createMock(stdClass::class);
+        $resource = $this->createMock(stdClass::class);
 
         $this->instance->addTransformer($transformer);
 
-        $this->assertInstanceOf(MockObject::class, $source);
+        $this->assertInstanceOf(MockObject::class, $resource);
 
-        $this->assertEquals($transformer, $this->instance->getTransformer($source));
+        $this->assertEquals($transformer, $this->instance->getTransformer($resource));
     }
 
     /** @test */
@@ -75,12 +75,12 @@ class TransformerRegistryTest extends TestCase
     public function itThrowsWhenTransformerForSourceAlreadyExists(): void
     {
         $transformer = new class implements CanTransform {
-            public static function getSourceClass(): string
+            public function getResourceClass(): string
             {
                 return stdClass::class;
             }
 
-            public function transform($source)
+            public function transform($resource)
             {
                 return null;
             }
