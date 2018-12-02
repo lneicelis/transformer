@@ -4,7 +4,7 @@ namespace Lneicelis\Transformer\Pipe;
 
 use Lneicelis\Transformer\Contract\CanGuard;
 use Lneicelis\Transformer\Contract\CanTransform;
-use Lneicelis\Transformer\Contract\HasAccessControl;
+use Lneicelis\Transformer\Contract\HasAccessConfig;
 use Lneicelis\Transformer\Exception\AccessDeniedException;
 use Lneicelis\Transformer\TransformerRegistry;
 use Lneicelis\Transformer\ValueObject\AccessConfig;
@@ -36,7 +36,7 @@ class AccessControlPipeTest extends TestCase
     public function itAllowsAccessWhenNoGuardSpecified(): void
     {
         $transformer = $this
-            ->getMockBuilder([CanTransform::class, HasAccessControl::class])
+            ->getMockBuilder([CanTransform::class, HasAccessConfig::class])
             ->getMock();
         $transformer->expects(static::once())
             ->method('getAccessConfig')
@@ -56,7 +56,7 @@ class AccessControlPipeTest extends TestCase
         $context = new Context();
 
         $transformer = $this
-            ->getMockBuilder([CanTransform::class, HasAccessControl::class])
+            ->getMockBuilder([CanTransform::class, HasAccessConfig::class])
             ->getMock();
         $transformer->expects(static::once())
             ->method('getAccessConfig')
@@ -83,7 +83,7 @@ class AccessControlPipeTest extends TestCase
     public function itThrowsIfGuardDoesNotAllowAccess(): void
     {
         $transformer = $this
-            ->getMockBuilder([CanTransform::class, HasAccessControl::class])
+            ->getMockBuilder([CanTransform::class, HasAccessConfig::class])
             ->getMock();
         $transformer->expects(static::once())
             ->method('getAccessConfig')
@@ -112,7 +112,7 @@ class AccessControlPipeTest extends TestCase
     public function itDoesNotCallGuardWhenPropertyNotRequired(): void
     {
         $transformer = $this
-            ->getMockBuilder([CanTransform::class, HasAccessControl::class])
+            ->getMockBuilder([CanTransform::class, HasAccessConfig::class])
             ->getMock();
         $transformer->expects(static::once())
             ->method('getAccessConfig')
@@ -140,7 +140,7 @@ class AccessControlPipeTest extends TestCase
     {
         $context = new Context(['optionalProperty']);
         $transformer = $this
-            ->getMockBuilder([CanTransform::class, HasAccessControl::class])
+            ->getMockBuilder([CanTransform::class, HasAccessConfig::class])
             ->getMock();
         $transformer->expects(static::once())
             ->method('getAccessConfig')

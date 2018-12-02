@@ -2,7 +2,7 @@
 
 namespace Lneicelis\Transformer\Contract;
 
-interface HasOptionalProperties extends CanTransform
+interface HasLazyProperties extends CanTransform
 {
     /**
      * @param mixed $source any php object that has public properties or methods

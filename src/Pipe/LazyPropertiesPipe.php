@@ -3,7 +3,7 @@
 namespace Lneicelis\Transformer\Pipe;
 
 use Lneicelis\Transformer\Contract\CanPipe;
-use Lneicelis\Transformer\Contract\HasOptionalProperties;
+use Lneicelis\Transformer\Contract\HasLazyProperties;
 use Lneicelis\Transformer\Contract\HasSchema;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 use Lneicelis\Transformer\TransformerRegistry;
@@ -39,7 +39,7 @@ class LazyPropertiesPipe implements CanPipe
 
         $transformer = $this->transformerRepository->getTransformer($source);
 
-        if (! $transformer instanceof HasOptionalProperties) {
+        if (! $transformer instanceof HasLazyProperties) {
             return $data;
         }
 

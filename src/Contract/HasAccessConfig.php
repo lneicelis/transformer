@@ -4,7 +4,7 @@ namespace Lneicelis\Transformer\Contract;
 
 use Lneicelis\Transformer\ValueObject\AccessConfig;
 
-interface HasAccessControl
+interface HasAccessConfig
 {
     public function getAccessConfig(): AccessConfig;
 }

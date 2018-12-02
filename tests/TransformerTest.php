@@ -3,7 +3,7 @@
 namespace Lneicelis\Transformer;
 
 use Lneicelis\Transformer\Contract\CanTransform;
-use Lneicelis\Transformer\Contract\HasOptionalProperties;
+use Lneicelis\Transformer\Contract\HasLazyProperties;
 use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use Lneicelis\Transformer\Pipe\TransformPipe;
 use Lneicelis\Transformer\ValueObject\Context;
@@ -154,7 +154,7 @@ class TransformerTest extends TestCase
     /** @test */
     public function itAddsOptionalProperties(): void
     {
-        $transformer = new class implements CanTransform, HasOptionalProperties {
+        $transformer = new class implements CanTransform, HasLazyProperties {
             static function getSourceClass(): string {
                 return DateTimeZone::class;
             }
@@ -188,7 +188,7 @@ class TransformerTest extends TestCase
     public function itRecurse(): void
     {
         $this->transformerRegistry->addTransformer(
-            new class implements CanTransform, HasOptionalProperties {
+            new class implements CanTransform, HasLazyProperties {
                 static function getSourceClass(): string {
                     return stdClass::class;
                 }

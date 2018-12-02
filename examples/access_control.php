@@ -3,8 +3,8 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Lneicelis\Transformer\Contract\CanGuard;
 use Lneicelis\Transformer\Contract\CanTransform;
-use Lneicelis\Transformer\Contract\HasAccessControl;
-use Lneicelis\Transformer\Contract\HasOptionalProperties;
+use Lneicelis\Transformer\Contract\HasAccessConfig;
+use Lneicelis\Transformer\Contract\HasLazyProperties;
 use Lneicelis\Transformer\Pipe\AccessControlPipe;
 use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use Lneicelis\Transformer\Pipe\TransformPipe;
@@ -26,7 +26,7 @@ class EvilGuard implements CanGuard {
     }
 }
 
-class DateTimeTransformer implements CanTransform, HasOptionalProperties, HasAccessControl
+class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessConfig
 {
     public static function getSourceClass(): string
     {

@@ -13,9 +13,9 @@ you would use DI container for instantiating all transformer instance.
 ### Setup
 
 ```php
-$transformerRepository = new TransformerRepository();
+$transformerRegistry = new TransformerRegistry();
 $transformer = new Transformer([
-    new TransformPipe($transformerRepository),
+    new TransformPipe($transformerRegistry),
 ]);
 ```
 
@@ -47,7 +47,7 @@ class DateTimeTransformer implements CanTransform
 
 ```php
 $dateTimeTransformer = new DateTimeTransformer();
-$transformerRepository->addTransformer($dateTimeTransformer);
+$transformerRegistry->addTransformer($dateTimeTransformer);
 ```
 
 ### Using transformer
@@ -109,14 +109,14 @@ all data returned is always scalar values that can be serialized.
      }
  }
  
- $transformerRepository = new TransformerRepository();
+ $transformerRegistry = new TransformerRegistry();
  $transformer = new Transformer([
-     new TransformPipe($transformerRepository),
-     new OptionalPropertiesPipe($transformerRepository),
+     new TransformPipe($transformerRegistry),
+     new LazyPropertiesPipe($transformerRegistry),
  ]);
  
- $transformerRepository->addTransformer(new DateTimeTransformer());
- $transformerRepository->addTransformer(new DateTimeZoneTransformer());
+ $transformerRegistry->addTransformer(new DateTimeTransformer());
+ $transformerRegistry->addTransformer(new DateTimeZoneTransformer());
  
  $someDate = new DateTime('2000-10-10 12:00:00', new DateTimeZone('-0400'));
  
@@ -138,7 +138,7 @@ e.g. requires additional database queries.
 In such cases we can use AdditionalPropertiesPipe that allows us to specify transformation schema.
 
  ```php
- class DateTimeTransformer implements CanTransform, HasOptionalProperties
+ class DateTimeTransformer implements CanTransform, HasLazyProperties
  {
      public static function getSourceClass(): string
      {
@@ -161,10 +161,10 @@ In such cases we can use AdditionalPropertiesPipe that allows us to specify tran
      }
  }
  
-$transformerRepository = new TransformerRepository();
+$transformerRegistry = new TransformerRegistry();
 $transformer = new Transformer([
-    new TransformPipe($transformerRepository),
-    new OptionalPropertiesPipe($transformerRepository),
+    new TransformPipe($transformerRegistry),
+    new LazyPropertiesPipe($transformerRegistry),
 ]);
 
 $someDate = new DateTime('2000-10-10 12:00:00');
@@ -215,7 +215,7 @@ class EvilGuard implements CanGuard {
     }
 }
 
-class DateTimeTransformer implements CanTransform, HasOptionalProperties, HasAccessControl
+class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessConfig
 {
     public static function getSourceClass(): string
     {
@@ -245,14 +245,14 @@ class DateTimeTransformer implements CanTransform, HasOptionalProperties, HasAcc
     }
 }
 
-$transformerRepository = new TransformerRepository();
+$transformerRegistry = new TransformerRegistry();
 $transformer = new Transformer([
-    new AccessControlPipe($transformerRepository, [new EvilGuard()]),
-    new TransformPipe($transformerRepository),
-    new OptionalPropertiesPipe($transformerRepository),
+    new AccessControlPipe($transformerRegistry, [new EvilGuard()]),
+    new TransformPipe($transformerRegistry),
+    new LazyPropertiesPipe($transformerRegistry),
 ]);
 
-$transformerRepository->addTransformer(new DateTimeTransformer());
+$transformerRegistry->addTransformer(new DateTimeTransformer());
 
 $someDate = new DateTime('2000-10-10 12:00:00');
 

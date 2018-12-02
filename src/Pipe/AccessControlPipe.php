@@ -4,7 +4,7 @@ namespace Lneicelis\Transformer\Pipe;
 
 use Lneicelis\Transformer\Contract\CanGuard;
 use Lneicelis\Transformer\Contract\CanPipe;
-use Lneicelis\Transformer\Contract\HasAccessControl;
+use Lneicelis\Transformer\Contract\HasAccessConfig;
 use Lneicelis\Transformer\Exception\AccessDeniedException;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 use Lneicelis\Transformer\TransformerRegistry;
@@ -63,7 +63,7 @@ class AccessControlPipe implements CanPipe
     private function assertCanAccess($source, Context $context, Path $path): void {
         $transformer = $this->transformerRepository->getTransformer($source);
 
-        if (! $transformer instanceof HasAccessControl) {
+        if (! $transformer instanceof HasAccessConfig) {
             return;
         }
 
