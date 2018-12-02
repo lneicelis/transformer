@@ -13,7 +13,6 @@ build:
         coverage:
             tests:
                 override:
-                -   command: php -i | grep xdebug
                 -   command: ./vendor/bin/phpunit --configuration=phpunit.xml
                     coverage:
                         file: coverage.xml
