@@ -3,16 +3,23 @@ build:
         analysis:
             project_setup:
                 override:
-                - 'true'
+                -   'true'
             tests:
                 override:
-                - php-scrutinizer-run
+                -   php-scrutinizer-run
                 -   command: phpcs-run
                     use_website_config: true
         tests: true
+        coverage:
+            tests:
+                override:
+                -   command: ./vendor/bin/phpunit --coverage-clover=coverage.clover tests/
+                    coverage:
+                        file: coverage.clover
+                        format: clover
 filter:
     excluded_paths:
-    - 'tests/*'
+    -   'tests/*'
 checks:
     php: true
 tools:
