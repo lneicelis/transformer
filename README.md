@@ -5,12 +5,13 @@
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
 ## Goals
-* Ensure end output is always serializable (JSON, XML, YML, etc)
+* help define clear, unambiguous and transparent interface between client and server
+* Ensure output is always serializable (JSON, XML, YML, etc)
 * Data integrity and consistent data schema across whole domain (single definition of resource transformation)
 * Better separation between front-end and back-end responsibilities
-* Ease of transformers testability (One transformer is always responsible for single resource transformation)
+* Ease of transformers testability (a transformer is always responsible for single resource transformation)
 * Data security (resource property access control)
-* Extendability to be able to support various use cases (normalization, graphQL schema, etc)
+* Extendability and ability to support various use cases (data normalization, graphQL schema, etc)
 
 ## Usage
 For the sake of simplicity we wont use any namespaces and will be instantiating transformer instance manually.
@@ -68,12 +69,12 @@ echo $transformer->transform($resource);
 
 ### Nesting
 Resource object properties or values returned from resource accessors are not always scalar values 
-in real world app but instead other objects.
+in real world app but instead other resources.
 In order to get only scalar values we might need to inject transformers into transformers 
 to eventually have only scalar values that can be serialized.
-However that usually leads to increased complexity, difficult testing and bloated transformers.
+However that usually leads to increased complexity, difficult testing, limited scalability and bloated transformers.
 
-Transformer package allows you not to worry about object nesting object transformation.
+Transformer package allows you not to worry about nested objects transformation.
 As long as resources returned from transform method has a transformer registered in transformer registry
 eventual result of transform method will be serializable array.
 
@@ -137,11 +138,11 @@ array(2) {
 }
 ```
 
-### Lazy transformation
-There are cases when you do not need all available properties all the time.
-* You need granular control of what properties are returned from different endpoints.
-* Some properties transformation is expensive (e.g. require additional DB queries)
-* You want to save bandwidth by returning only relevant properties
+### Lazy transformation (LazyPropertiesPipe)
+There are cases when you do not need all available properties all the time. e.g.:
+* You need granular control of when and what properties are returned from different endpoints.
+* Some properties transformation is expensive (e.g. require additional DB queries);
+* You want to save bandwidth by returning only relevant properties to the front-end;
 
 In such cases we can leverage LazyPropertiesPipe that uses schema to add properties on demand.
 This can be especially useful when using tools like GraphQL 
@@ -201,18 +202,21 @@ array(2) {
 
  ```
 
-### Access control
-Since one of the goals of this package is to help to define clear and transparent interface
-of how application data is returned starting with how it is transformed and finishing who can access it.
-Since single transformer is responsible of transforming all source properties of an object issues occur
-when the same transformer is being used to return data that was required by for example admin and regular use.
-In order to solve this issue you can use AccessControlPipe in transformation pipeline to specify access control
-for individual properties.
+### Access control (AccessControlPipe)
+Since one transformer defines transformation schema for one resource an issue occurs when 
+consumer of the resource data has different data access scope.
+
+For example, the same resource might be used by regular user and by admin user, 
+however admin user should be able to access more properties of the resource that a regular user.
+
+Keeping API flexible, transparent and still allowing client to specify schema 
+requires access control mechanism at transformation level.
+**AccessControlPipe** can be used in transformation pipeline to specify access control
+for whole data or individual properties.
 
 Example:
-
 ```php
-class EvilGuard implements CanGuard {
+class OwnerOnly implements CanGuard {
 
     public function getName(): string
     {
@@ -235,7 +239,7 @@ class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessC
     public function getAccessConfig(): AccessConfig
     {
         return new AccessConfig([], [
-            'timestamp' => [EvilGuard::class],
+            'timestamp' => [OwnerOnly::class],
         ]);
     }
 
@@ -257,7 +261,7 @@ class DateTimeTransformer implements CanTransform, HasLazyProperties, HasAccessC
 
 $transformerRegistry = new TransformerRegistry();
 $transformer = new Transformer([
-    new AccessControlPipe($transformerRegistry, [new EvilGuard()]),
+    new AccessControlPipe($transformerRegistry, [new OwnerOnly()]),
     new TransformPipe($transformerRegistry),
     new LazyPropertiesPipe($transformerRegistry),
 ]);
