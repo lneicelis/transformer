@@ -13,9 +13,10 @@ build:
         coverage:
             tests:
                 override:
-                -   command: ./vendor/bin/phpunit --coverage-clover=coverage.clover tests/
+                -   command: php -ini|grep 'xdebug support'
+                -   command: ./vendor/bin/phpunit --configuration=phpunit.xml
                     coverage:
-                        file: coverage.clover
+                        file: coverage.xml
                         format: clover
 filter:
     excluded_paths:
