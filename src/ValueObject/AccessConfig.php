@@ -26,6 +26,8 @@ class AccessConfig
     public function set(string $property, array $groups): AccessConfig
     {
         $this->groupsByProperty[$property] = $groups;
+
+        return $this;
     }
 
     /**
