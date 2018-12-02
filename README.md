@@ -1,5 +1,8 @@
 # transformer
-[![CircleCI](https://circleci.com/gh/lneicelis/transformer.svg?style=svg)](https://circleci.com/gh/lneicelis/transformer)
+[![Build Status](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/build.png?b=master)](https://scrutinizer-ci.com/g/lneicelis/transformer/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lneicelis/transformer/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lneicelis/transformer/?branch=master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
 ## Usage
 For the sake of simplicity we wont use any namespaces
