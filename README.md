@@ -5,7 +5,7 @@
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
 ## Goals
-* help define clear, unambiguous and transparent interface between client and server
+* Define clear, unambiguous and transparent interface between client and server
 * Ensure output is always serializable (JSON, XML, YML, etc)
 * Data integrity and consistent data schema across whole domain (single definition of resource transformation)
 * Better separation between front-end and back-end responsibilities
