@@ -107,7 +107,9 @@ class AccessControlPipe implements CanPipe
 
     private function getPathSchema(Path $path, array $schema): array
     {
-        $segments = array_filter($path->getSegments(), 'is_string');
+        $segments = array_filter($path->getSegments(), function ($segment) {
+            return ! is_numeric($segment);
+        });
 
         return $this->arrayGet($schema, $segments, []);
     }
