@@ -50,7 +50,9 @@ class LazyPropertiesPipe implements CanPipe
         return array_reduce(
             $properties,
             function (array $data, string $key) use ($resource, $transformer) {
-                $data[$key] = $data[$key] ?? $transformer->{$key}($resource);
+                if (! array_key_exists($key, $data)) {
+                    $data[$key] = $transformer->{$key}($resource);
+                }
 
                 return $data;
             },
