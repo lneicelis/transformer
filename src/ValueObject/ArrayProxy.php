@@ -57,8 +57,8 @@ abstract class ArrayProxy implements ArrayAccess, IteratorAggregate
 
     private function get($property)
     {
-        if (array_key_exists($this->resource, $this->resource)) {
-            $this->resource[$property];
+        if (array_key_exists($property, $this->resource)) {
+            return $this->resource[$property];
         }
 
         return NullProxy::instance();
