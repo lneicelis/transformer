@@ -33,11 +33,7 @@ class DeferredAwareTransformer extends Transformer
         $context = $context ?: new Context();
 
         $result = parent::transform($resource, $context);
-        if (! empty($this->deferredTree)) {
-            $result = $this->loadDeferred($result);
-
-            return $this->transform($result, $context);
-        }
+        $result = $this->loadDeferred($result, $context);
 
         return $result;
     }
@@ -65,9 +61,11 @@ class DeferredAwareTransformer extends Transformer
 
     /**
      * @param array $result
+     * @param Context $context
      * @return array
+     * @throws TransformerNotFoundException
      */
-    protected function loadDeferred(array $result): array
+    protected function loadDeferred(array $result, Context $context): array
     {
         foreach ($this->deferredTree as $resourceClass => $pathByResourceId) {
             $loader = $this->getLoader($resourceClass);
@@ -75,16 +73,18 @@ class DeferredAwareTransformer extends Transformer
 
             $loadedValues = $loader->load($ids);
 
+            unset($this->deferredTree[$resourceClass]);
+
+            $transformedValues = $this->transform($loadedValues, $context);
+
             foreach (array_values($pathByResourceId) as $index => $path) {
                 /** @var Path $path */
                 $result = Arr::setValue(
                     $result,
                     $path->getSegments(),
-                    $loadedValues[$index]
+                    $transformedValues[$index]
                 );
             }
-
-            unset($this->deferredTree[$resourceClass]);
         }
 
         return $result;
