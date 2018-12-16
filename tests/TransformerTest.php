@@ -6,6 +6,8 @@ use Lneicelis\Transformer\Contract\CanTransform;
 use Lneicelis\Transformer\Contract\HasLazyProperties;
 use Lneicelis\Transformer\Pipe\LazyPropertiesPipe;
 use Lneicelis\Transformer\Pipe\TransformPipe;
+use Lneicelis\Transformer\Stub\CategoryResource;
+use Lneicelis\Transformer\ValueObject\ArrayProxy;
 use Lneicelis\Transformer\ValueObject\Context;
 use DateTimeZone;
 use DateTime;
@@ -225,5 +227,51 @@ class TransformerTest extends TestCase
         ];
 
         $this->assertEquals($expectedData, $data);
+    }
+
+    /** @test */
+    public function itTransformsArrayWrappedIntoProxy(): void
+    {
+        $this->transformerRegistry->addTransformer(new class implements CanTransform {
+            public function getResourceClass(): string
+            {
+                return CategoryResource::class;
+            }
+
+            /**
+             * @param CategoryResource $resource
+             * @return string|int|float|array
+             */
+            public function transform($resource)
+            {
+                return [
+                    'name' => ucfirst($resource->name),
+                    'children' => CategoryResource::map($resource->children),
+                ];
+            }
+        });
+
+        $resource = new CategoryResource([
+            'name' => 'category1',
+            'children' => [
+                [
+                    'name' => 'category2',
+                    'children' => []
+                ],
+            ],
+        ]);
+
+        $actual = $this->instance->transform($resource);
+        $expected = [
+            'name' => 'Category1',
+            'children' => [
+                [
+                    'name' => 'Category2',
+                    'children' => []
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected, $actual);
     }
 }
