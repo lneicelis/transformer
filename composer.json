@@ -24,7 +24,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Lneicelis\\Transformer\\": "tests/"
+      "Lneicelis\\Transformer\\": ["tests/", "examples/"]
     }
   },
   "minimum-stability": "dev"
