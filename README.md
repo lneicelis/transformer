@@ -4,6 +4,23 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lneicelis/transformer/?branch=master)
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/lneicelis/transformer/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
+## Table of Contents
+1. [Goals](#Goals)
+2. Vocabulary/Concepts
+    1. Resource
+    2. Transformer
+    3. Context
+    4. Middleware
+3. Install & Setup
+4. Testing transformers
+5. Examples
+    1. Basic transformation
+    2. Recursive transformation
+    3. Lazy properties transformation (Optimization)
+    4. Access Control
+    5. Batch loading (Solving N+1 problem)
+    6. Building your own middleware
+
 ## Goals
 * Define clear, unambiguous and transparent interface between client and server
 * Ensure output is always serializable (JSON, XML, YML, etc)
@@ -13,9 +30,20 @@
 * Data security (resource property access control)
 * Extendability and ability to support various use cases (data normalization, graphQL schema, etc)
 
+## Vocabulary/Concepts
+### Resource
+### Transformer
+### Context
+### Middleware
+
+## Install & Setup
+To install a package run:
+```
+composer require lneicelis/transformer
+```
 ## Usage
 For the sake of simplicity we wont use any namespaces and will be instantiating transformer instance manually.
-In real world applications you would use DI container for instantiating all transformer instance.
+In real world applications you would use DI container for instantiating all transformer instance and Transformer factory for creating and configuring you transformer instance.
 
 ### Setup
 
