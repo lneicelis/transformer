@@ -2,7 +2,6 @@
 
 namespace Lneicelis\Transformer;
 
-use Lneicelis\Transformer\Contract\CanLoad;
 use Lneicelis\Transformer\Exception\TransformerNotFoundException;
 use Lneicelis\Transformer\Helper\Arr;
 use Lneicelis\Transformer\ValueObject\Context;
@@ -14,12 +13,14 @@ class DeferredAwareTransformer extends Transformer
     /** @var array[] */
     private $deferredTree = [];
 
-    /** @var CanLoad */
-    private $loaderByResourceClass;
+    /** @var LoaderRegistry */
+    private $loaderRegistry;
 
-    public function addLoader(CanLoad $loader): void
+    public function __construct(array $pipes, LoaderRegistry $loaderRegistry)
     {
-        $this->loaderByResourceClass[$loader->getResourceName()] = $loader;
+        parent::__construct($pipes);
+
+        $this->loaderRegistry = $loaderRegistry;
     }
 
     /**
@@ -39,22 +40,23 @@ class DeferredAwareTransformer extends Transformer
     }
 
     /**
-     * @param $resource
+     * @param $deferred
      * @param Context $context
      * @param Path $path
      * @return array|float|int|string
      * @throws TransformerNotFoundException
-     * @throws Exception\TransformerNotFoundException
      */
-    protected function transformAny($resource, Context $context, Path $path)
+    protected function transformAny($deferred, Context $context, Path $path)
     {
-        if (! $resource instanceof Deferred) {
-            return parent::transformAny($resource, $context, $path);
+        if (! $deferred instanceof Deferred) {
+            return parent::transformAny($deferred, $context, $path);
         }
 
-        $resourceClass = $resource->getResourceClass();
-        $resourceId = $resource->getId();
-        $this->deferredTree[$resourceClass][$resourceId] = $path;
+        $resource = $deferred->getResource();
+        $property = $deferred->getProperty();
+        $resourceClass = get_class($resource);
+
+        $this->deferredTree = Arr::setValue($this->deferredTree, [$resourceClass, $property, (string)$path], $deferred);
 
         return null;
     }
@@ -67,31 +69,28 @@ class DeferredAwareTransformer extends Transformer
      */
     protected function loadDeferred(array $result, Context $context): array
     {
-        foreach ($this->deferredTree as $resourceClass => $pathByResourceId) {
-            $loader = $this->getLoader($resourceClass);
-            $ids = array_keys($pathByResourceId);
+        foreach ($this->deferredTree as $resourceClass => $properties) {
+            foreach ($properties as $property => $deferredByPath) {
+                $loader = $this->loaderRegistry->getLoader($resourceClass, $property);
+                $paths = array_keys($deferredByPath);
+                $deferreds = array_values($deferredByPath);
 
-            $loadedValues = $loader->load($ids);
+                unset($this->deferredTree[$resourceClass][$property]);
 
-            unset($this->deferredTree[$resourceClass]);
+                $loadedValues = $loader->load($deferreds);
+                $transformedValues = $this->transform($loadedValues, $context);
 
-            $transformedValues = $this->transform($loadedValues, $context);
-
-            foreach (array_values($pathByResourceId) as $index => $path) {
-                /** @var Path $path */
-                $result = Arr::setValue(
-                    $result,
-                    $path->getSegments(),
-                    $transformedValues[$index]
-                );
+                foreach ($paths as $index => $path) {
+                    /** @var Path $path */
+                    $result = Arr::setValue(
+                        $result,
+                        explode('.', $path),
+                        $transformedValues[$index]
+                    );
+                }
             }
         }
 
         return $result;
-    }
-
-    protected function getLoader(string $resourceClass): CanLoad
-    {
-        return $this->loaderByResourceClass[$resourceClass];
     }
 }

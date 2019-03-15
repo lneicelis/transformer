@@ -4,25 +4,31 @@ namespace Lneicelis\Transformer\ValueObject;
 
 class Deferred
 {
-    /** @var string */
-    private $resourceClass;
+    /** @var object */
+    private $resource;
 
     /** @var string */
-    private $id;
+    private $property;
 
-    public function __construct(string $resourceClass, string $id)
+    public function __construct($resource, string $property)
     {
-        $this->resourceClass = $resourceClass;
-        $this->id = $id;
+        $this->resource = $resource;
+        $this->property = $property;
     }
 
-    public function getResourceClass(): string
+    /**
+     * @return object
+     */
+    public function getResource()
     {
-        return $this->resourceClass;
+        return $this->resource;
     }
 
-    public function getId(): string
+    /**
+     * @return string
+     */
+    public function getProperty(): string
     {
-        return $this->id;
+        return $this->property;
     }
 }

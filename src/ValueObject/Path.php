@@ -31,4 +31,9 @@ class Path
     {
         return $this->segments;
     }
+
+    public function __toString()
+    {
+        return implode('.', $this->segments);
+    }
 }
