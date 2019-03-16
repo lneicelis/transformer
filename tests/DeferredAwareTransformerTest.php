@@ -41,15 +41,6 @@ class DeferredAwareTransformerTest extends TestCase
             $this->transformPipe,
             $this->loadPropertiesPipe,
         ], $this->loaderRegistry);
-    }
-
-    /** @test */
-    public function itBatchLoadsDeferredValues(): void
-    {
-        $resources = [
-            new stdClass(),
-            new stdClass(),
-        ];
 
         $this->transformerRegistry->addTransformer(new class implements CanTransform {
             public function getResourceClass(): string
@@ -59,9 +50,18 @@ class DeferredAwareTransformerTest extends TestCase
 
             public function transform($resource)
             {
-                return ['id' => 1];
+                return ['id' => $resource->id];
             }
         });
+    }
+
+    /** @test */
+    public function itBatchLoadsDeferredValues(): void
+    {
+        $resources = [
+            (object)['id' => 1],
+            (object)['id' => 2],
+        ];
 
         /** @var CanLoad|MockObject $loader */
         $loader = $this->createMock(CanLoad::class);
@@ -71,7 +71,7 @@ class DeferredAwareTransformerTest extends TestCase
         $loader->expects(static::once())
             ->method('getProperty')
             ->willReturn('relation');
-        $loader->expects(static::once())
+        $loader->expects(static::any())
             ->method('load')
             ->with([
                 new Deferred($resources[0], 'relation'),
@@ -87,7 +87,7 @@ class DeferredAwareTransformerTest extends TestCase
                 'relation' => 'a',
             ],
             [
-                'id' => 1,
+                'id' => 2,
                 'relation' => 'b',
             ],
         ];
@@ -99,45 +99,43 @@ class DeferredAwareTransformerTest extends TestCase
     /** @test */
     public function itBatchLoadsDeferredValuesRecursively(): void
     {
+        /** @var CanLoad|MockObject $loader */
         $loader = $this->createMock(CanLoad::class);
         $loader->expects(static::once())
-            ->method('getResourceName')
-            ->willReturn('Category');
-        $loader->expects(static::at(1))
-            ->method('load')
-            ->with([3, 4])
-            ->willReturn([
-                ['id' => 3, 'parent' => new Deferred('Category', 1)],
-                ['id' => 4, 'parent' => new Deferred('Category', 2)],
-            ]);
-        $loader->expects(static::at(2))
-            ->method('load')
-            ->willReturn([
-                'category1',
-                'category2',
-            ]);
+            ->method('getResourceClass')
+            ->willReturn(stdClass::class);
+        $loader->expects(static::once())
+            ->method('getProperty')
+            ->willReturn('relation');
 
-        $this->transformer->addLoader($loader);
+        $resources = (object)['id' => 1];
+        $childResource = (object)['id' => 2];
+        $loader->expects(static::exactly(2))
+            ->method('load')
+            ->withConsecutive(
+                [[new Deferred($resources, 'relation')]],
+                [[new Deferred($childResource, 'relation')]]
+            )
+            ->willReturnOnConsecutiveCalls(
+                [$childResource],
+                ['a']
+            );
 
-        $input = [
-            ['category' => new Deferred('Category', 3)],
-            ['category' => new Deferred('Category', 4)],
-        ];
+        $this->loaderRegistry->addLoader($loader);
+
         $expectedResult = [
-            [
-                'category' => [
-                    'id' => 3,
-                    'parent' => 'category1',
-                ]
-            ],
-            [
-                'category' => [
-                    'id' => 4,
-                    'parent' => 'category2',
-                ]
+            'id' => 1,
+            'relation' => [
+                'id' => 2,
+                'relation' => 'a',
             ],
         ];
-        $actual = $this->transformer->transform($input);
+        $schema = [
+            'relation' => [
+                'relation',
+            ]
+        ];
+        $actual = $this->transformer->transform($resources, new Context($schema));
 
         $this->assertEquals($expectedResult, $actual);
     }

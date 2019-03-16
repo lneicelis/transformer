@@ -70,25 +70,27 @@ class DeferredAwareTransformer extends Transformer
     protected function loadDeferred(array $result, Context $context): array
     {
         foreach ($this->deferredTree as $resourceClass => $properties) {
+            unset($this->deferredTree[$resourceClass]);
+
             foreach ($properties as $property => $deferredByPath) {
                 $loader = $this->loaderRegistry->getLoader($resourceClass, $property);
                 $paths = array_keys($deferredByPath);
                 $deferreds = array_values($deferredByPath);
 
-                unset($this->deferredTree[$resourceClass][$property]);
-
                 $loadedValues = $loader->load($deferreds);
-                $transformedValues = $this->transform($loadedValues, $context);
 
                 foreach ($paths as $index => $path) {
-                    /** @var Path $path */
-                    $result = Arr::setValue(
-                        $result,
-                        explode('.', $path),
-                        $transformedValues[$index]
-                    );
+                    $segments = explode('.', $path);
+                    $path = new Path($segments);
+                    $value = $this->transformAny($loadedValues[$index], $context, $path);
+
+                    $result = Arr::setValue($result, $segments, $value);
                 }
             }
+        }
+
+        if (! empty($this->deferredTree)) {
+            return $this->loadDeferred($result, $context);
         }
 
         return $result;
