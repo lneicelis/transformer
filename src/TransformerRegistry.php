@@ -13,14 +13,15 @@ class TransformerRegistry
 
     /**
      * @param CanTransform $transformer
+     * @param bool $override
      * @return $this
      * @throws DuplicateResourceTransformerException
      */
-    public function addTransformer(CanTransform $transformer)
+    public function addTransformer(CanTransform $transformer, bool $override = false)
     {
         $resourceClass = $transformer->getResourceClass();
 
-        if (array_key_exists($resourceClass, $this->transformerByResourceClass)) {
+        if ($override === false && array_key_exists($resourceClass, $this->transformerByResourceClass)) {
             throw new DuplicateResourceTransformerException(sprintf(
                 'Transformer for resource "%s" already registered in "%s"',
                 $resourceClass,

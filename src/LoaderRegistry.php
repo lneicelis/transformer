@@ -18,14 +18,14 @@ class LoaderRegistry
         $this->loaderTree = Arr::setValue($this->loaderTree, [$resourceClass, $resourceProperty], $loader);
     }
 
-    public function getLoader(string $resourceClass, string $resourceProperty): CanLoad
+    public function getLoader(string $resourceClass, string $resourceProperty): ?CanLoad
     {
-        return $this->loaderTree[$resourceClass][$resourceProperty];
+        return $this->loaderTree[$resourceClass][$resourceProperty] ?? null;
     }
 
     public function getLoadableProperties(string $resourceClass): array
     {
-        $loaderByProperty = $this->loaderTree[$resourceClass];
+        $loaderByProperty = $this->loaderTree[$resourceClass] ?? [];
 
         return array_keys($loaderByProperty);
     }
